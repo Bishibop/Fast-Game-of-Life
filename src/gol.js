@@ -36,17 +36,8 @@ const gol = (opts) => {
 
 
     p.setup = () => {
-      let canvas = p.createCanvas(pixelWidth, pixelWidth);
-      // canvas.mouseClicked(() => {
-      //   const [x, y] = p.mouseGridCoordinate();
-      //   if (lifeGrid[x][y]) {
-      //     lifeGrid[x][y] = 0;
-      //   } else {
-      //     lifeGrid[x][y] = 1;
-      //   }
-      //   p.redraw();
-      //   return false;
-      // });
+      const canvas = p.createCanvas(pixelWidth, pixelWidth);
+      canvas.mouseClicked(p.clickHandler);
 
       p.stroke(210);
       p.strokeCap(p.SQUARE);
@@ -57,7 +48,7 @@ const gol = (opts) => {
     };
 
 
-    p.mouseClicked = () => {
+    p.clickHandler = () => {
       if (!gameRunning) {
         const [x, y] = p.mouseGridCoordinate();
         if (lifeGrid[x][y]) {
@@ -74,14 +65,19 @@ const gol = (opts) => {
     let lifeGrid;
     let lifeGridBuffer;
     p.buildLifeGrids = () => {
-      lifeGrid = [];
-      lifeGridBuffer = [];
-      for (let i of Array(squares).keys()) {
-        lifeGrid.push(Array(squares).fill(0));
-      }
-      for (let i of Array(squares).keys()) {
-        lifeGridBuffer.push(Array(squares).fill(0));
-      }
+      lifeGrid = Array(squares).fill(null).map(() => {
+        return Array(squares).fill(null).map(() => {
+          if (Math.random() > opts.initialRandom / 100) {
+            return 0;
+          } else {
+            return 1;
+          }
+        });
+      });
+      lifeGridBuffer = Array(squares).fill(null).map(() => {
+        return Array(squares).fill(0);
+      });
+      p.bufferNextGridState();
     }
 
     const adjacentCells = [
@@ -164,6 +160,7 @@ const gol = (opts) => {
       opts.setGeneration(generation);
     };
 
+
     p.clearGame = () => {
       p.setGeneration(0);
       if (gameRunning) {
@@ -211,7 +208,7 @@ const gol = (opts) => {
       }
       gameRunning = !gameRunning;
       opts.setGameRunning(gameRunning);
-    }
+    };
 
 
     toggleGame = p.toggleGame;

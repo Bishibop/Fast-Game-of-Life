@@ -9,10 +9,12 @@ function Sketch() {
   let [iterationInterval, setIterationInterval] = useState(100);
   let [gameRunning, setGameRunning] = useState(false);
   let [generation, setGeneration] = useState(0);
+  let [initialRandom, setInitialRandom] = useState(0);
   let [sketchOptions, setSketchOptions] = useState({
       squares: squares,
       pixelWidth: pixelWidth,
       iterationInterval: iterationInterval,
+      initialRandom: initialRandom,
       setGeneration: setGeneration,
       setGameRunning: setGameRunning
   });
@@ -24,8 +26,9 @@ function Sketch() {
       squares: squares,
       pixelWidth: pixelWidth,
       iterationInterval: iterationInterval,
+      initialRandom: initialRandom
     });
-  }, [squares, pixelWidth, iterationInterval]);
+  }, [squares, pixelWidth, iterationInterval, initialRandom]);
 
   useEffect(() => {
     setGolSketch(new window.p5(gol(sketchOptions), "sketch"));
@@ -51,6 +54,14 @@ function Sketch() {
       setIterationInterval(0);
     } else {
       setIterationInterval(parseInt(event.target.value));
+    }
+  };
+
+  const initialRandomnessChange = (event) =>  {
+    if (event.target.value === "") {
+      setInitialRandom(0);
+    } else {
+      setInitialRandom(parseInt(event.target.value));
     }
   };
 
@@ -89,6 +100,15 @@ function Sketch() {
             type="text"
             value={iterationInterval.toString()}
             onChange={iterationIntervalChange}
+          />
+        </label>
+        <br/>
+        <label>
+          Initial randomness (%):&nbsp;
+          <input
+            type="text"
+            value={initialRandom.toString()}
+            onChange={initialRandomnessChange}
           />
         </label>
         <br/>
