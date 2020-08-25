@@ -10,6 +10,14 @@
 // * initial grid values
 // * edge type: Dead edges, live edges, taurus edges
 // * rule chages
+//
+//
+// Optimizations
+// * If the cell is the same as in the previous generation, you don't
+//   need to redraw it. This could cut evaluation time in half since many cells
+//   stay the same.
+// * Paint each color of pixel in groups, rather than left to right, top down.
+//   Fewer times to switch the fill color
 
 let toggleGame;
 let clearGame;
@@ -22,6 +30,7 @@ const gol = (opts) => {
     const pixelWidth = opts.pixelWidth || 600;
     const squares = opts.squares || 25;
     const squareSize = pixelWidth/squares;
+    let generation = 0;
     let gameRunning = false;
     let gameInterval = setInterval(p.iterateGrid, iterationInterval);
 
@@ -129,13 +138,20 @@ const gol = (opts) => {
       const tempGrid = lifeGrid;
       lifeGrid = lifeGridBuffer;
       lifeGridBuffer = tempGrid;
+      p.setGeneration(generation + 1);
       
       // Draw the new grid, which will buffer the next one
       p.redraw();
     };
 
 
+    p.setGeneration = (gen) => {
+      generation = gen;
+      opts.setGeneration(generation);
+    };
+
     p.clearGame = () => {
+      p.setGeneration(0);
       if (gameRunning) {
         p.toggleGame();
       }
@@ -176,11 +192,11 @@ const gol = (opts) => {
     p.toggleGame = () => {
       if (gameRunning) {
         clearInterval(gameInterval);
-        gameRunning = false;
       } else {
         gameInterval = setInterval(p.iterateGrid, iterationInterval);
-        gameRunning = true;
       }
+      gameRunning = !gameRunning;
+      opts.setGameRunning(gameRunning);
     }
 
 

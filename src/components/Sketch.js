@@ -8,29 +8,32 @@ function Sketch() {
   let [pixelWidth, setPixelWidth] = useState(600);
   let [iterationInterval, setIterationInterval] = useState(100);
   let [gameRunning, setGameRunning] = useState(false);
+  let [generation, setGeneration] = useState(0);
   let [sketchOptions, setSketchOptions] = useState({
       squares: squares,
       pixelWidth: pixelWidth,
-      iterationInterval: iterationInterval
+      iterationInterval: iterationInterval,
+      setGeneration: setGeneration,
+      setGameRunning: setGameRunning
   });
   let [golSketch, setGolSketch] = useState();
 
   useEffect(() => {
     setSketchOptions({
+      ...sketchOptions,
       squares: squares,
       pixelWidth: pixelWidth,
-      iterationInterval: iterationInterval
+      iterationInterval: iterationInterval,
     });
   }, [squares, pixelWidth, iterationInterval]);
 
   useEffect(() => {
-    console.log('this is the on load useEffect');
     setGolSketch(new window.p5(gol(sketchOptions), "sketch"));
   }, []);
 
   const handleSubmit = (event) => {
     golSketch.remove();
-    console.log(sketchOptions, squares);
+    setGeneration(0);
     setGolSketch(new window.p5(gol(sketchOptions), "sketch"));
     event.preventDefault();
   };
@@ -56,12 +59,12 @@ function Sketch() {
     <>
       <div id="sketch">
       </div>
+      <p>Generation: {generation}</p>
       <button onClick={() => {
-        setGameRunning(!gameRunning);
         toggleGame();
       }}>
         {gameRunning &&
-            "Stop"
+            "Pause"
         }
         {!gameRunning &&
             "Start"
