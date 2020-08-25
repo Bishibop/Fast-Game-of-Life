@@ -37,16 +37,16 @@ const gol = (opts) => {
 
     p.setup = () => {
       let canvas = p.createCanvas(pixelWidth, pixelWidth);
-      canvas.mouseClicked(() => {
-        const [x, y] = p.mouseGridCoordinate();
-        if (lifeGrid[x][y]) {
-          lifeGrid[x][y] = 0;
-        } else {
-          lifeGrid[x][y] = 1;
-        }
-        p.redraw();
-        return false;
-      });
+      // canvas.mouseClicked(() => {
+      //   const [x, y] = p.mouseGridCoordinate();
+      //   if (lifeGrid[x][y]) {
+      //     lifeGrid[x][y] = 0;
+      //   } else {
+      //     lifeGrid[x][y] = 1;
+      //   }
+      //   p.redraw();
+      //   return false;
+      // });
 
       p.stroke(210);
       p.strokeCap(p.SQUARE);
@@ -54,6 +54,20 @@ const gol = (opts) => {
       p.noLoop();
       p.buildLifeGrids();
       //p.noSmooth();
+    };
+
+
+    p.mouseClicked = () => {
+      if (!gameRunning) {
+        const [x, y] = p.mouseGridCoordinate();
+        if (lifeGrid[x][y]) {
+          lifeGrid[x][y] = 0;
+        } else {
+          lifeGrid[x][y] = 1;
+        }
+        p.redraw();
+      }
+      return false;
     };
 
 
