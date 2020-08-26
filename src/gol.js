@@ -48,7 +48,14 @@ const gol = (opts) => {
 
       p.stroke(210);
       p.strokeCap(p.SQUARE);
-      p.strokeWeight(2);
+      // Decreasing border width with square width
+      if (squareSize > 10) {
+        p.strokeWeight(2);
+      } else if (squareSize > 5) {
+        p.strokeWeight(1);
+      } else {
+        p.strokeWeight(0);
+      }
       p.noLoop();
       p.buildLifeGrids();
 
