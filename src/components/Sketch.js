@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { gol, toggleGame, clearGame } from '../gol'
+import { gol, toggleGame, resetGame, iterateGrid } from '../gol'
 import {Slider, Typography} from '@material-ui/core'
+import { presetObjects } from '../presetObjects';
 
 function Sketch() {
 
   let [squares, setSquares] = useState(25);
   let [pixelWidth, setPixelWidth] = useState(600);
-  let [iterationInterval, setIterationInterval] = useState(100);
+  let [iterationInterval, setIterationInterval] = useState(300);
   let [gameRunning, setGameRunning] = useState(false);
   let [generation, setGeneration] = useState(0);
   let [initialRandom, setInitialRandom] = useState(0);
+  let [presetObject, setPresetObject] = useState("--empty grid--");
   let [sketchOptions, setSketchOptions] = useState({
       squares: squares,
       pixelWidth: pixelWidth,
@@ -28,7 +30,7 @@ function Sketch() {
       iterationInterval: iterationInterval,
       initialRandom: initialRandom
     });
-  }, [squares, pixelWidth, iterationInterval, initialRandom]);
+  }, [squares, pixelWidth, iterationInterval, initialRandom, presetObject]);
 
   useEffect(() => {
     setGolSketch(new window.p5(gol(sketchOptions), "sketch"));
@@ -41,7 +43,7 @@ function Sketch() {
     event.preventDefault();
   };
    
-  const squaresChange = (event) =>  {
+  const squaresChange = (event) => {
     if (event.target.value === "") {
       setSquares(0);
     } else {
@@ -49,7 +51,7 @@ function Sketch() {
     }
   };
 
-  const iterationIntervalChange = (event) =>  {
+  const iterationIntervalChange = (event) => {
     if (event.target.value === "") {
       setIterationInterval(0);
     } else {
@@ -57,12 +59,16 @@ function Sketch() {
     }
   };
 
-  const initialRandomnessChange = (event) =>  {
+  const initialRandomnessChange = (event) => {
     if (event.target.value === "") {
       setInitialRandom(0);
     } else {
       setInitialRandom(parseInt(event.target.value));
     }
+  };
+
+  const presetChange = (event) => {
+    setPresetObject(event.target.value);
   };
 
 
@@ -81,9 +87,8 @@ function Sketch() {
             "Start"
         }
       </button>
-      <button onClick={clearGame}>
-        Clear
-      </button>
+      <button onClick={resetGame}>Reset</button>
+      <button onClick={iterateGrid}>Next Iteration</button>
       <form onSubmit={handleSubmit}>
         <label>
           Number of squares across:&nbsp;
@@ -112,7 +117,16 @@ function Sketch() {
           />
         </label>
         <br/>
-        <input type="submit" value="Update Game of Life" />
+        <label>
+          Load preset object:&nbsp;
+          <select value={presetObject} onChange={presetChange}>
+            { Object.keys(presetObjects).map((key) => (
+              <option value={key}>{key}</option>
+            )) }
+          </select>
+        </label>
+        <br/>
+        <input type="submit" value="Update Game" />
       </form>
     </>
   );

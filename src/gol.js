@@ -1,12 +1,12 @@
 // Dynamic functions I want to expose to the react app:
-// * start game
-// * stop game
-// * reset game
-// * set interval
+// * (DONE) start game
+// * (DONE) stop game
+// * (DONE) reset game
+// * (DONE) set interval
 
 // Initialization variable to expose:
-// * pixel width
-// * # of squares
+// * (DONE) pixel width
+// * (DONE) # of squares
 // * initial grid values
 // * edge type: Dead edges, live edges, taurus edges
 // * rule chages
@@ -18,9 +18,17 @@
 //   stay the same.
 // * Paint each color of pixel in groups, rather than left to right, top down.
 //   Fewer times to switch the fill color
+// * Some kind of change list? Rather saving a previous generation and
+//   comparing cells to that state
+// * 2 major optimizations: don't redraw cells that have the same state,
+//   and don't calculate the state of cells that cannot have changed
 
+import { presetObjects } from './presetObjects';
+
+// Functions to export to the React app
 let toggleGame;
-let clearGame;
+let resetGame;
+let iterateGrid;
 
 const gol = (opts) => { 
 
@@ -34,7 +42,6 @@ const gol = (opts) => {
     let gameRunning = false;
     let gameInterval = setInterval(p.iterateGrid, iterationInterval);
 
-
     p.setup = () => {
       const canvas = p.createCanvas(pixelWidth, pixelWidth);
       canvas.mouseClicked(p.clickHandler);
@@ -44,6 +51,14 @@ const gol = (opts) => {
       p.strokeWeight(2);
       p.noLoop();
       p.buildLifeGrids();
+
+      if (presetObjects[opts.preset]) {
+        const center = Math.floor(squares/2);
+        presetObjects[opts.preset].forEach((pair) => {
+          lifeGrid[pair[0] + center][pair[1] + center] = 1;
+        });
+        p.redraw();
+      }
       //p.noSmooth();
     };
 
@@ -161,7 +176,7 @@ const gol = (opts) => {
     };
 
 
-    p.clearGame = () => {
+    p.resetGame = () => {
       p.setGeneration(0);
       if (gameRunning) {
         p.toggleGame();
@@ -196,6 +211,8 @@ const gol = (opts) => {
     p.keyPressed = () => {
       if (p.keyCode === 32) {
         p.toggleGame();
+      } else if (p.keyCode === 39) {
+        p.iterateGrid();
       }
     };
 
@@ -211,9 +228,11 @@ const gol = (opts) => {
     };
 
 
+    // Assigning local functions to outer variables for exporting
     toggleGame = p.toggleGame;
-    clearGame = p.clearGame;
+    resetGame = p.resetGame;
+    iterateGrid = p.iterateGrid;
   };
 };
 
-export { gol, toggleGame, clearGame };
+export { gol, toggleGame, resetGame, iterateGrid };
