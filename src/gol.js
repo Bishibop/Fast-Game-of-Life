@@ -7,7 +7,7 @@
 // Initialization variable to expose:
 // * (DONE) pixel width
 // * (DONE) # of squares
-// * initial grid values
+// * (DONE) initial grid values
 // * edge type: Dead edges, live edges, taurus edges
 // * rule chages
 //
@@ -19,6 +19,28 @@
 // * (DONE) Paint each color of pixel in groups, rather than left to right, top down.
 //   Fewer times to switch the fill color
 // * Don't calculate the state of cells that cannot have changed
+//   How do you do this?
+//    * Quadtree method. Somehow use this to not evaluate whole regions of the
+//      space
+//    * Change list method. If a cell didn't change, and none of it's
+//      neighbors changed. It cant have changed. But what does this speed up?
+//      Oh. Only evaluate the state around cells that have changed. So rather
+//      than iterating through the whole grid to evaluate state change,
+//      iterate through the previous change list and their surrounding cells.
+//      Basically, iterate through the change list, and create a "possible
+//      change list" of all adjacent cells and iterate those cells to evaluate
+//      their new state.
+// * Inner-loop lookup table based on bit patterns of the 9 cells. 
+//   Rather than counting your neighbors and using conditional logic to
+//   determine the next state, you count your neighbors and pull the value
+//   from a lookup table. I don't think this does much?
+// * One big inefficiency is that you're looking up the state of a cell
+//   multiple times. 8 times. Once for each of it's neighbors. Is there a way
+//   to "save" those lookups, so you only have to do them once?
+// * Store each cell's neighbor count rather than it's state (well you would
+//   need both). Normally this doesn't improve anything because you still have
+//   to iterate through the whole grid to update neighbor counts, but if
+//   you're only update the changed cells and their neighbors, this might work. 
 
 import { presetObjects } from './presetObjects';
 
