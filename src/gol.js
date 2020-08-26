@@ -233,6 +233,8 @@ const gol = (opts) => {
     p.keyPressed = () => {
       if (p.keyCode === 32) {
         p.toggleGame();
+        // Prevents spacebar from paging down the webpage
+        return false;
       } else if (p.keyCode === 39) {
         p.iterateGrid();
       }
