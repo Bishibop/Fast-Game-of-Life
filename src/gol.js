@@ -13,15 +13,12 @@
 //
 //
 // Optimizations
-// * If the cell is the same as in the previous generation, you don't
+// * (DONE) If the cell is the same as in the previous generation, you don't
 //   need to redraw it. This could cut evaluation time in half since many cells
 //   stay the same.
-// * Paint each color of pixel in groups, rather than left to right, top down.
+// * (DONE) Paint each color of pixel in groups, rather than left to right, top down.
 //   Fewer times to switch the fill color
-// * Some kind of change list? Rather saving a previous generation and
-//   comparing cells to that state
-// * 2 major optimizations: don't redraw cells that have the same state,
-//   and don't calculate the state of cells that cannot have changed
+// * Don't calculate the state of cells that cannot have changed
 
 import { presetObjects } from './presetObjects';
 
@@ -41,6 +38,9 @@ const gol = (opts) => {
     let generation = 0;
     let gameRunning = false;
     let gameInterval = setInterval(p.iterateGrid, iterationInterval);
+    // Arrays used to store cells that change from one gen to the next
+    let births = [];
+    let deaths = [];
 
     p.setup = () => {
       const canvas = p.createCanvas(pixelWidth, pixelWidth);
@@ -137,10 +137,12 @@ const gol = (opts) => {
         if (neighborCount === 2 || neighborCount === 3) {
           return 1;
         } else {
+          deaths.push([i, j]);
           return 0;
         }
       } else { 
         if (neighborCount === 3) {
+          births.push([i, j]);
           return 1;
         } else {
           return 0;
@@ -150,6 +152,8 @@ const gol = (opts) => {
 
 
     p.bufferNextGridState = () => {
+      births.length = 0
+      deaths.length = 0
       lifeGrid.forEach(function(gridColumn, i) {
         gridColumn.forEach(function(cell, j) {
           lifeGridBuffer[i][j] = p.nextCellState(i, j);
@@ -166,7 +170,7 @@ const gol = (opts) => {
       p.setGeneration(generation + 1);
       
       // Draw the new grid, which will buffer the next one
-      p.redraw();
+      p.fastDraw();
     };
 
 
@@ -186,8 +190,8 @@ const gol = (opts) => {
     };
 
 
-    p.draw = () => {
-      // Draw the grid
+    // Draw all the cells
+    p.fullDraw = () => {
       for (let i of Array(squares).keys()) {
         for (let j of Array(squares).keys()) {
           if (lifeGrid[i][j]) {
@@ -198,6 +202,24 @@ const gol = (opts) => {
           p.rect(i * squareSize, j * squareSize, squareSize);
         }
       }
+    };
+
+    // Only draw the cells that changed
+    p.fastDraw = () => {
+      p.fill(60);
+      births.forEach((birthCell) => {
+        p.rect(birthCell[0] * squareSize, birthCell[1] * squareSize, squareSize);
+      });
+      p.fill(240);
+      deaths.forEach((birthCell) => {
+        p.rect(birthCell[0] * squareSize, birthCell[1] * squareSize, squareSize);
+      });
+      p.bufferNextGridState();
+    }
+
+    p.draw = () => {
+      // Draw the grid
+      p.fullDraw();
       // Buffer the next iteration immediately after
       p.bufferNextGridState();
     };
