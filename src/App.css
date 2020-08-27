@@ -42,3 +42,14 @@
   text-align: left;
   width: 700px;
 }
+
+.edge-rule-label {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 5px;
+}
+
+.edge-rule-options {
+  display: inline-block;
+  text-align: left;
+}

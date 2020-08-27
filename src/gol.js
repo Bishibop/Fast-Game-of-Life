@@ -9,7 +9,7 @@
 // * (DONE) # of squares
 // * (DONE) initial grid values
 // * edge type: Dead edges, live edges, taurus edges
-// * rule chages
+// * rule changes
 //
 //
 // Optimizations
@@ -42,6 +42,7 @@
 //   need both). Normally this doesn't improve anything because you still have
 //   to iterate through the whole grid to update neighbor counts, but if
 //   you're only update the changed cells and their neighbors, this might work. 
+// * Parallelization
 
 import { presetObjects } from './presetObjects';
 
@@ -52,7 +53,7 @@ let resetGame;
 let iterateGrid;
 
 
-// Wrapper function to contain parameters and callback functions
+// Wrapper function to pass in parameters and callback functions
 const gol = (opts) => { 
 
   return (p) => {
@@ -97,6 +98,16 @@ const gol = (opts) => {
 
       // Disables auto drawing
       p.noLoop();
+
+      // Set the edge rule: alive, dead or wrap
+      if (opts.edgeRule === "wrap") {
+        p.countNeighbors = p.countNeighborsWrap;
+      } else if (opts.edgeRule === "dead") {
+        p.countNeighbors = p.countNeighborsDead;
+      } else {
+        p.countNeighbors = p.countNeighborsAlive;
+      }
+
 
       // Initializes the grid and buffer
       p.buildLifeGrids();
@@ -315,8 +326,44 @@ const gol = (opts) => {
     ];
 
 
-    // This is the innermost loop. No real speedups implemented here.
-    p.countNeighbors = (i, j) => {
+    // This is the innermost loop. Main speedup opportunity remaining.
+
+    // Edges are dead
+    p.countNeighborsDead = (i, j) => {
+      return adjacentCells.reduce(function(count, pair) {
+          const xCoord = i + pair[0];
+          const yCoord = j + pair[1];
+          if (xCoord >= squares ||
+              xCoord < 0 ||
+              yCoord >= squares ||
+              yCoord < 0) {
+            return count;
+          } else {
+            return count + lifeGrid[xCoord][yCoord];
+          }
+      }, 0);
+    };
+
+
+    // Edges are alive
+    p.countNeighborsAlive = (i, j) => {
+      return adjacentCells.reduce(function(count, pair) {
+          const xCoord = i + pair[0];
+          const yCoord = j + pair[1];
+          if (xCoord >= squares ||
+              xCoord < 0 ||
+              yCoord >= squares ||
+              yCoord < 0) {
+            return count + 1;
+          } else {
+            return count + lifeGrid[xCoord][yCoord];
+          }
+      }, 0);
+    };
+
+
+    // Edges wrap
+    p.countNeighborsWrap = (i, j) => {
       return adjacentCells.reduce(function(count, pair) {
         // Mod squares to get the indicies to wrap
         // Plus squares first to handle negative indicies

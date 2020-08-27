@@ -12,6 +12,7 @@ function Sketch() {
   let [generation, setGeneration] = useState(0);
   let [initialRandom, setInitialRandom] = useState(30);
   let [presetObject, setPresetObject] = useState("--empty grid--");
+  let [edgeRule, setEdgeRule] = useState("wrap");
   let [sketchOptions, setSketchOptions] = useState({
       setGeneration: setGeneration,
       setGameRunning: setGameRunning,
@@ -19,7 +20,8 @@ function Sketch() {
       pixelWidth: pixelWidth,
       iterationInterval: iterationInterval,
       initialRandom: initialRandom,
-      preset: presetObject
+      preset: presetObject,
+      edgeRule: edgeRule
   });
   let [golSketch, setGolSketch] = useState();
 
@@ -31,8 +33,15 @@ function Sketch() {
       iterationInterval: iterationInterval,
       initialRandom: initialRandom,
       preset: presetObject,
+      edgeRule: edgeRule
     });
-  }, [squares, pixelWidth, iterationInterval, initialRandom, presetObject]);
+  }, [ squares,
+       pixelWidth,
+       iterationInterval,
+       initialRandom,
+       presetObject,
+       edgeRule ]
+  );
 
   useEffect(() => {
     setGolSketch(new window.p5(gol(sketchOptions), "sketch"));
@@ -73,6 +82,10 @@ function Sketch() {
     setPresetObject(event.target.value);
   };
 
+  const edgeRuleChange = (event) => {
+    setEdgeRule(event.target.value);
+  };
+
 
   return (
     <>
@@ -91,6 +104,8 @@ function Sketch() {
       </button>
       <button onClick={resetGame}>Reset</button>
       <button onClick={iterateGrid}>Next Iteration</button>
+      <br/>
+      <br/>
       <form onSubmit={handleSubmit}>
         <label>
           Number of squares across:&nbsp;
@@ -127,6 +142,44 @@ function Sketch() {
             )) }
           </select>
         </label>
+        <br/>
+        <br/>
+        <div className="edge-rule-label">Edge Rule: </div>
+        <div className="edge-rule-options">
+          <label>
+            <input
+              type="radio"
+              name="edge-rule"
+              value="wrap"
+              checked={edgeRule === "wrap"}
+              onChange={edgeRuleChange}
+            />
+            &nbsp;Toroidal Wrap
+          </label>
+          <br/>
+          <label>
+            <input
+              type="radio"
+              name="edge-rule"
+              value="dead"
+              checked={edgeRule === "dead"}
+              onChange={edgeRuleChange}
+            />
+            &nbsp;Dead border
+          </label>
+          <br/>
+          <label>
+            <input
+              type="radio"
+              name="edge-rule"
+              value="alive"
+              checked={edgeRule === "alive"}
+              onChange={edgeRuleChange}
+            />
+            &nbsp;Alive border
+          </label>
+        </div>
+        <br/>
         <br/>
         <input type="submit" value="Update Game" />
       </form>
