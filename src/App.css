@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+.game-description {
+  margin: 20px auto 20px auto;
+  text-align: left;
+  width: 700px;
+}

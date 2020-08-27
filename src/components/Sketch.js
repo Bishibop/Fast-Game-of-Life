@@ -121,13 +121,26 @@ function Sketch() {
           Load preset object:&nbsp;
           <select value={presetObject} onChange={presetChange}>
             { Object.keys(presetObjects).map((key) => (
-              <option value={key}>{key}</option>
+              <option key={key} value={key}>{key}</option>
             )) }
           </select>
         </label>
         <br/>
         <input type="submit" value="Update Game" />
       </form>
+      <div class="game-description">
+        <p>
+          This is Conway's <strong>Game of Life</strong>. It is a cellular automaton represented by a grid of cells that are either "alive" or "dead". Three simple rules determine the next state of the game.
+        </p>
+        <ol>
+          <li>Any live cell with two or three live neighbors survives.</li>
+          <li>Any dead cell with three live neighbours becomes alive.</li>
+          <li>All other cells die or stay dead.</li>
+        </ol>
+        <p>
+          With just these three rules, complex structures emerge that exhibit a range of interesting behaviors. Some persist indefinitely. Some generate other structures. Some even replicate themselves.
+        </p>
+      </div>
     </>
   );
 }

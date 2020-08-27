@@ -61,8 +61,10 @@ const gol = (opts) => {
     let gameRunning = false;
     let gameInterval = setInterval(p.iterateGrid, iterationInterval);
     // Arrays used to store cells that change from one gen to the next
+    // can these be consts?
     let births = [];
     let deaths = [];
+    const possibleChangeSet = new Set();
 
     p.setup = () => {
       const canvas = p.createCanvas(pixelWidth, pixelWidth);
@@ -121,7 +123,7 @@ const gol = (opts) => {
       lifeGridBuffer = Array(squares).fill(null).map(() => {
         return Array(squares).fill(0);
       });
-      p.bufferNextGridState();
+      p.fullBuffer();
     }
 
     const adjacentCells = [
@@ -137,21 +139,9 @@ const gol = (opts) => {
 
 
     p.countNeighbors = (i, j) => {
-      // No wrap. Border "cells" are dead.
-    //  return adjacentCells.reduce(function(count, pair) {
-    //    const xCoord = i + pair[0];
-    //    const yCoord = j + pair[1];
-    //    if (xCoord === lifeGrid.length ||
-    //        xCoord === -1 ||
-    //        yCoord === lifeGrid.length ||
-    //        yCoord === -1) {
-    //      return count;
-    //    } else {
-    //      return count + lifeGrid[xCoord][yCoord];
-    //    }
-    //  }, 0);
-      // Wrap
+      // This wraps the grid
       return adjacentCells.reduce(function(count, pair) {
+        // We have to do the + squares mod squares to get the indicies to wrap
           const xCoord = (i + pair[0] + squares) % squares;
           const yCoord = (j + pair[1] + squares) % squares;
           return count + lifeGrid[xCoord][yCoord];
@@ -180,7 +170,37 @@ const gol = (opts) => {
     };
 
 
-    p.bufferNextGridState = () => {
+    // Calculate buffer from cells that have changed
+    // This just isn't that much faster though. Went from about 25% self time
+    // down to 19%
+    p.fastBuffer = () => {
+      const changeList = births.concat(deaths);
+      births.length = 0
+      deaths.length = 0
+      changeList.forEach((cell) => {
+        possibleChangeSet.add(`${cell[0]},${cell[1]}`);
+        adjacentCells.forEach(function(pair) {
+          const xCoord = (cell[0] + pair[0] + squares) % squares;
+          const yCoord = (cell[1] + pair[1] + squares) % squares;
+          // You need to use strings here because they are immutable
+          // If you use Arrays, the set just keeps all the duplicates
+          possibleChangeSet.add(`${xCoord},${yCoord}`);
+        });
+      });
+      possibleChangeSet.forEach((cellString) => {
+        const cell = cellString.split(',');
+        const xCoord = parseInt(cell[0]);
+        const yCoord = parseInt(cell[1]);
+        lifeGridBuffer[xCoord][yCoord] = p.nextCellState(xCoord, yCoord);
+      });
+      possibleChangeSet.clear();
+    };
+
+
+    // Calculate buffer from entire state
+    p.fullBuffer = () => {
+      // Why are these being set here? I know they have to be. Not sure why.
+      // Something to do with the mouse click
       births.length = 0
       deaths.length = 0
       lifeGrid.forEach(function(gridColumn, i) {
@@ -220,7 +240,7 @@ const gol = (opts) => {
 
 
     // Draw all the cells
-    p.fullDraw = () => {
+    p.draw = () => {
       for (let i of Array(squares).keys()) {
         for (let j of Array(squares).keys()) {
           if (lifeGrid[i][j]) {
@@ -231,7 +251,10 @@ const gol = (opts) => {
           p.rect(i * squareSize, j * squareSize, squareSize);
         }
       }
+      // Buffer the next iteration immediately after
+      p.fullBuffer();
     };
+
 
     // Only draw the cells that changed
     p.fastDraw = () => {
@@ -243,16 +266,8 @@ const gol = (opts) => {
       deaths.forEach((birthCell) => {
         p.rect(birthCell[0] * squareSize, birthCell[1] * squareSize, squareSize);
       });
-      p.bufferNextGridState();
+      p.fastBuffer();
     }
-
-    p.draw = () => {
-      // Draw the grid
-      p.fullDraw();
-      // Buffer the next iteration immediately after
-      p.bufferNextGridState();
-    };
-
 
     p.mouseGridCoordinate = (x, y) => {
       return [Math.floor(p.mouseX/squareSize), Math.floor(p.mouseY/squareSize)]
