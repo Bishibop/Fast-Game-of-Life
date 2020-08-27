@@ -1,3 +1,4 @@
+// Relative cell arrangements representing objects to initialize on the grid
 const presetObjects = {
   '--empty grid--': [
   ],

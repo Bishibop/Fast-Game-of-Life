@@ -5,20 +5,21 @@ import { presetObjects } from '../presetObjects';
 
 function Sketch() {
 
-  let [squares, setSquares] = useState(25);
+  let [squares, setSquares] = useState(100);
   let [pixelWidth, setPixelWidth] = useState(600);
-  let [iterationInterval, setIterationInterval] = useState(300);
+  let [iterationInterval, setIterationInterval] = useState(50);
   let [gameRunning, setGameRunning] = useState(false);
   let [generation, setGeneration] = useState(0);
-  let [initialRandom, setInitialRandom] = useState(0);
+  let [initialRandom, setInitialRandom] = useState(30);
   let [presetObject, setPresetObject] = useState("--empty grid--");
   let [sketchOptions, setSketchOptions] = useState({
+      setGeneration: setGeneration,
+      setGameRunning: setGameRunning,
       squares: squares,
       pixelWidth: pixelWidth,
       iterationInterval: iterationInterval,
       initialRandom: initialRandom,
-      setGeneration: setGeneration,
-      setGameRunning: setGameRunning
+      preset: presetObject
   });
   let [golSketch, setGolSketch] = useState();
 
@@ -28,7 +29,8 @@ function Sketch() {
       squares: squares,
       pixelWidth: pixelWidth,
       iterationInterval: iterationInterval,
-      initialRandom: initialRandom
+      initialRandom: initialRandom,
+      preset: presetObject,
     });
   }, [squares, pixelWidth, iterationInterval, initialRandom, presetObject]);
 
@@ -128,9 +130,11 @@ function Sketch() {
         <br/>
         <input type="submit" value="Update Game" />
       </form>
-      <div class="game-description">
+      <div className="game-description">
         <p>
-          This is Conway's <strong>Game of Life</strong>. It is a cellular automaton represented by a grid of cells that are either "alive" or "dead". Three simple rules determine the next state of the game.
+          This is Conway's <strong>Game of Life</strong>.
+          It is a cellular automaton represented by a grid of cells that are either "alive" or "dead".
+          Three simple rules determine the next state of the game.
         </p>
         <ol>
           <li>Any live cell with two or three live neighbors survives.</li>
@@ -138,7 +142,8 @@ function Sketch() {
           <li>All other cells die or stay dead.</li>
         </ol>
         <p>
-          With just these three rules, complex structures emerge that exhibit a range of interesting behaviors. Some persist indefinitely. Some generate other structures. Some even replicate themselves.
+          With just these three rules, complex structures emerge that exhibit a range of interesting behaviors.
+          Some persist indefinitely. Some generate other structures. Some even replicate themselves.
         </p>
       </div>
     </>
