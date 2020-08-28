@@ -8,7 +8,7 @@
 // * (DONE) pixel width
 // * (DONE) # of squares
 // * (DONE) initial grid values
-// * edge type: Dead edges, live edges, taurus edges
+// * (DONE) edge type: Dead edges, live edges, taurus edges
 // * rule changes
 //
 //

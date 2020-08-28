@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { gol, toggleGame, resetGame, iterateGrid } from '../gol'
-import {Slider, Typography} from '@material-ui/core'
 import { presetObjects } from '../presetObjects';
 
 function Sketch() {
@@ -102,7 +101,9 @@ function Sketch() {
             "Start"
         }
       </button>
+      <span>&nbsp;:&nbsp;</span>
       <button onClick={resetGame}>Reset</button>
+      <span>&nbsp;:&nbsp;</span>
       <button onClick={iterateGrid}>Next Iteration</button>
       <br/>
       <br/>
@@ -204,29 +205,3 @@ function Sketch() {
 }
 
 export default Sketch;
-      // <Typography id="iteration-interval-slider" variant="overline" >
-      //   Iteration Interval
-      // </Typography>
-      // <Slider
-      //   aria-label="Iteration Interval"
-      //   aria-labelledby="iteration-interval-slider"
-      //   aria-valuetext="milliseconds between iterations"
-      //   aria-labelledby="discrete-slider"
-      //   getAriaValueText={(val) => `${val} milliseconds`}
-      //   defaultValue={100}
-      //   min={10}
-      //   max={5000}
-      //   value={iterationInterval}
-      //   // scale={(x) => x ** 10}
-      //   onChangeCommitted={(event, interval) => setIterationInterval(interval)}
-      //   marks={[
-      //     { 'value': 10 },
-      //     { 'value': 20 },
-      //     { 'value': 50 },
-      //     { 'value': 100 },
-      //     { 'value': 500 },
-      //     { 'value': 1000 },
-      //     { 'value': 2000 },
-      //     { 'value': 5000 },
-      //   ]}
-      // />
