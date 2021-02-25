@@ -16,7 +16,7 @@ With just these three rules, complex structures emerge that exhibit a range of i
 
 ## Optimization Techniques
 
-While the rules of Conway's Game of Life are quite simple to implement in code, doing so performantly requires some non-obvious optimizations. These are a few that I implemented to drastically increase the size and iteration speed of this version:
+While the rules of Conway's Game of Life are quite simple to implement in code, doing so performantly requires some non-obvious optimizations. These are a few that I implemented to drastically increase the size and iteration speed this version is capable of:
 * Double buffer - Keep both the current state and next iteration in memory. Compute the next iteration immediately after drawing the current state and before the next redraw is triggered.
 * Change list - Maintain a list of cells who's state changed in the previous iteration and only iterate these cells and their neighbors on the next iteration
 * Redraw diff - Only redraw cells whose state has changed
