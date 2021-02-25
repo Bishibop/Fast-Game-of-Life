@@ -1,4 +1,4 @@
-# Fast Game of Life
+# Fast Game of Life - [Live Demo](https://game-of-life.nwmullen.vercel.app/)
 
 This is a fast, JavaScript implementation of Conway's **Game of Life**. The Game of Life is a cellular automaton designed to produce interesting, long-running emergent structures.
 
